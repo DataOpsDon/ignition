@@ -1,0 +1,71 @@
+name: {stack_name}
+
+# Caller workflow for the `{stack_name}` stack.
+# All pipeline logic lives in the shared CI/CD repo (DataOpsDon/terraform-azure-cicd);
+# this file only decides WHICH environment runs for WHICH branch/event.
+#
+# Branch -> environment mapping:
+#   feature/** push, develop push, PR into develop  -> dev  (apply on develop push only)
+#   main push, PR into main                         -> prd  (apply on main push only)
+#
+# Azure identity + Terraform state settings are read from GitHub environment
+# variables (AZURE_* / TF_STATE_*) on the `dev`, `dev/apply`, `prd` and
+# `prd/apply` environments - see stacks/{stack_name}/CONFIGURATION.md.
+# To add tst/uat, copy a job below and change `environment` and its `if:`.
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+    paths:
+      - 'stacks/{stack_name}/**'
+      - '.github/workflows/{stack_name}.yml'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'stacks/{stack_name}/**'
+      - '.github/workflows/{stack_name}.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  actions: read
+  security-events: write
+
+jobs:
+  dev:
+    if: (github.event_name == 'pull_request' && github.base_ref == 'develop') || (github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/heads/feature/') || github.ref == 'refs/heads/develop'))
+    # Pinned to a release of the shared CI/CD repo - bump deliberately.
+    uses: DataOpsDon/terraform-azure-cicd/.github/workflows/_terraform-pipeline.yml@main
+    with:
+      working_directory: stacks/{stack_name}/terraform
+      environment: dev
+    secrets:
+      module_repo_pat: ${{ secrets.MODULE_REPO_PAT }}
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+      actions: read
+      security-events: write
+
+  prd:
+    if: (github.event_name == 'pull_request' && github.base_ref == 'main') || (github.event_name != 'pull_request' && github.ref == 'refs/heads/main')
+    uses: DataOpsDon/terraform-azure-cicd/.github/workflows/_terraform-pipeline.yml@main
+    with:
+      working_directory: stacks/{stack_name}/terraform
+      environment: prd
+    secrets:
+      module_repo_pat: ${{ secrets.MODULE_REPO_PAT }}
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+      actions: read
+      security-events: write

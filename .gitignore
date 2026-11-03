@@ -1,0 +1,34 @@
+# --- Terraform ---
+.terraform/
+.terraform.lock.hcl.bak
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+# Plan files produced by templates/scripts/tf-plan.sh
+*-plan
+*-plan.txt
+# NOTE: tfvars are committed in this repo (stacks/*/terraform/tfvars). Never put secrets in them.
+
+# --- Secrets / credentials ---
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+*.p12
+credentials.json
+client_secret.json
+.azure/
+
+# --- Editors / OS ---
+.idea/
+.history/
+.DS_Store
+Thumbs.db

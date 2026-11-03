@@ -1,0 +1,80 @@
+# Global Variables
+# CI/CD platform that will run Terraform for this environment:
+#   ado    - creates Azure DevOps service connections (needs adoOrgUrl + PAT)
+#   github - creates GitHub Actions OIDC federated credentials (needs orgName_gh + repositoryName_gh)
+cicdPlatform: "github"
+isFirstTimeDeployToADO: false # true / false RUN ONCE: Deploys ADO permissions / variable group / environments.
+environment: "dev"
+location: "uksouth"  # Example regions: eastus, westus, uksouth, swedencentral
+locationShort: "uks"  # Example short regions: eus, wus, uks, sdc
+app_short: "<Fill Me In>"  # Example app short: app1, app2, app3
+instance: "01"        # Resource instance number
+tags:
+  environment: "${environment}"
+  Creator: "${app_short}"
+  ReviewDate: "YY/MM"
+
+# State Variables
+subscriptionId_State: "<Fill Me In>"  # Subscription ID for TF State Storage
+tags_state:
+  Service: "TerraformState"
+
+# Customise the containers created for TF State for the Application/Workload being deployed
+containers_state:
+  Network:
+    name: "network"
+  Infra:
+    name: "infra"
+
+# Optional variables for state storage account
+stateStorageSku: Standard_ZRS  # Options: Standard_LRS, Standard_GRS, Standard_RAGRS, Standard_ZRS, Premium_LRS
+stateStoragePublic_network_access_enabled: true
+
+# UMI Variables
+subscriptionId_umi: "<Fill Me In>"  # Subscription ID for User Managed Identities for Deployment
+tags_umi:
+  Service: "Deployment MI"
+
+# Service Connection Variables
+subscriptionId_Application: "<Fill Me In>"  # Subscription ID for Application/Workload Deployment
+subscriptionName_Application: "<Fill Me In>"  # Subscription Name for Application/Workload Deployment
+
+# GitHub Variables
+preventSelfReviewDeploy_gh: false  # GitHub Requirements in the Variables Documentation Markdown
+deployApprovalRequired: true  # GitHub Requirements in the Variables Documentation Markdown
+
+# ADO Variables
+preventSelfReviewDeploy_ado: false
+
+# Resource Naming Templates (customizable structure using template placeholders)
+rgName_state: "rg-tfstate-${app_short}-${environment}-${locationShort}-${instance}"
+saName_state: "sttfstate${app_short}${environment}${locationShort}"
+rgName_umi: "rg-umi-${app_short}-${environment}-${locationShort}-${instance}"
+umiName_build: "umi-tfbuild-${app_short}-${environment}-${locationShort}"
+umiName_deploy: "umi-tfdeploy-${app_short}-${environment}-${locationShort}"
+serviceConnectionName_Build: "sc-build-${app_short}-${environment}-${locationShort}-${instance}"
+serviceConnectionName_Deploy: "sc-deploy-${app_short}-${environment}-${locationShort}-${instance}"
+scDescription: "Service connection for either build or deploy using OIDC federated credentials."
+repositoryName_gh: "ignition"  # GitHub repository name (without the org) that runs the Terraform workflows
+teamName_gh: "approvers-${environment}-${app_short}-tf-${repositoryName_gh}"
+environmentName_gh: "${environment}"  # GitHub environment used by plan; apply uses "<name>/apply". Must match the workflow `environment` input
+
+# Optional variables (may be used by other modules/configurations)
+adoCreateProject: false
+adoOrgUrl: null #"https://dev.azure.com/#####"  # The Azure DevOps organization URL "https://dev.azure.com/<your org name>/"
+# Always pass the project name
+adoProjectName: null  # The Name of your Azure DevOps project
+adoProjectDescription: null #The description of the ADO project to be created. If adoCreateProject is false, this variable is ignored and the existing project will be used.
+orgName_gh: "DataOpsDon"  # The name of the GitHub organization containing the repository
+
+
+## DO NOT FILL OUT, PROMPTED FOR AT RUN TIME
+ghPAT: null  # The GitHub personal access token
+adoPAT: null  # The Azure DevOps personal access token
+
+createLeadEngineerGroup: true # Set to true to create the Lead Engineer group in your Azure DevOps project
+createPMGroup: true # Set to true to create the Project Manager group in your Azure DevOps project
+createEngineerGroup: true # Set to true to create the Engineer group in your Azure DevOps project
+createLeadTesterGroup: true # Set to true to create the Lead Tester group in your Azure DevOps project
+createTesterGroup: true # Set to true to create the Tester group in your Azure DevOps project
+createPlatformAdminGroup: true # Set to true to create the Platform Admin group in your Azure DevOps project

@@ -1,0 +1,7 @@
+# Code owners - reviewers requested automatically on pull requests.
+# More: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Replace the teams below with your own.
+*                     @DataOpsDon/infrastructure-team
+/.github/workflows/   @DataOpsDon/platform-team
+/bootstrap/           @DataOpsDon/platform-team

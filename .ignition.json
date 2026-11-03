@@ -1,0 +1,8 @@
+{
+  "cloud": "azure",
+  "cicd": "github",
+  "github_org": "DataOpsDon",
+  "github_repo": "ignition",
+  "cicd_repo": "terraform-azure-cicd",
+  "cicd_ref": "main"
+}
