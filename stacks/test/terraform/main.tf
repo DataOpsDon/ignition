@@ -26,6 +26,3 @@ module "resource_group" {
   name             = "${module.naming.name.resource_group}-test"
   tags             = var.tags
 }
-
-
-
